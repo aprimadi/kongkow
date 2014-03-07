@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kongkow</title>
+    <link rel='stylesheet' href='/static/css/style.css' />
+    <!-- TODO: figure out how to compile socket.io.js into one file -->
+    <script src='/socket.io/socket.io.js'></script>
+    <script type='text/javascript' src='/static/js/app.js'></script>
+  </head>
+  <body>
+    <div id="navbar">
+      <div id="logo">Kongkow</div>
+      <div id="motto">Ngobrol santai</div>
+    </div>
+    <div class="chat-panel">
+      <div class="left-panel">
+        <video id="remote-video"></video>
+        <video id="local-video"></video>
+      </div>
+      <div class="right-panel">
+        <div class="chat-display"></div>
+        <div class="chat-input">
+          <textarea class="chat-text-box" placeholder=""></textarea>
+          <button class="btn btn-primary send-button">Send</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

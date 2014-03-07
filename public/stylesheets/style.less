@@ -1,0 +1,70 @@
+// Main Boostrap Styles
+// Using separated files as we don't require all of these files,
+// and don't want to bundle code we aren't using
+// --------------------------------------------------------------------------
+
+@import "bootstrap/bootstrap.less";
+
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#navbar {
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  padding: 10px;
+  overflow: hidden;
+}
+
+#logo {
+  font-size: 30px;
+  float: left;
+  margin-left: 10px;
+}
+
+#motto {
+  float: left;
+  margin: 10px 0 0 20px;
+  font-size: 20px;
+}
+
+.chat-panel {
+  .left-panel {
+    width: 360px;
+    padding: 20px;
+    float: left;
+  }
+  .right-panel {
+    float: left;
+    padding: 20px;
+  }
+
+  video {
+    width: 320px;
+    height: 240px;
+    background-color: #ddd;
+    border-radius: 10px;
+  }
+
+  .chat-display {
+    background-color: #ddd;
+    width: 100%;
+  }
+  .chat-input {
+    margin-top: 20px;
+    overflow: hidden;
+
+    textarea {
+      float: left;
+    }
+    button {
+      float: left;
+      margin-left: 20px;
+    }
+  }
+}
