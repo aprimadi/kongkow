@@ -95,7 +95,7 @@ io.sockets.on('connection', function (socket) {
         if (!channels[channel]) break;
       }
 
-      channels[channel] = {participants: [socket.id]};
+      channels[channel] = {participants: [socket.id], end_handshake_count: 0};
       waiting = {socket_id: socket.id, channel: channel};
 
       console.log('Number of channels: ' + Object.keys(channels).length);
@@ -105,7 +105,10 @@ io.sockets.on('connection', function (socket) {
     }
   });
   socket.on('end_handshake', function (data) {
-    delete channels[data.channel];
+    channels[data.channel].end_handshake_count++;
+    if (channels[data.channel].end_handshake_count === 2) {
+      delete channels[data.channel];
+    }
     console.log('Number of channels: ' + Object.keys(channels).length);
   });
   socket.on('message', function (data) {
