@@ -152,8 +152,8 @@ var ChatWindow = Backbone.View.extend({
       });
     } else {
       logger.debug('ChatWindow.pcOnIceCandidate: End of candidate.');
-      socket.emit('end_handshake', {channel: this.channel});
-      this.channel = null;
+      //socket.emit('end_handshake', {channel: this.channel});
+      //this.channel = null;
     }
   },
 
