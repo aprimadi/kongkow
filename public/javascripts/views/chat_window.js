@@ -81,21 +81,7 @@ var ChatWindow = Backbone.View.extend({
   },
 
   createPeerConnection: function () {
-    var servers = {"iceServers": [
-      {
-        "url": "stun:stun.l.google.com:19302"
-      },
-      {
-        'url': 'turn:46.137.226.11:3478?transport=udp',
-        'credential': 'hero',
-        'username': 'gorst'
-      },
-      {
-        'url': 'turn:46.137.226.11:3478?transport=tcp',
-        'credential': 'hero',
-        'username': 'gorst'
-      }
-    ]};
+    var servers = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
     this.pc = new RTCPeerConnection(servers, {optional: [{RtpDataChannels: true}]});
     this.pc.onicecandidate = $.proxy(this.pcOnIceCandidate, this);
 
