@@ -1,5 +1,9 @@
 $(document).ready(function () {
-  window.socket = io.connect(window.location.toString());
+  if (NODE_ENV === 'development') {
+    window.socket = io.connect('ws://localhost');
+  } else if (NODE_ENV === 'production') {
+    window.socket = io.connect('wss://dry-thicket-1171.herokuapp.com')
+  }
   socket.on('connected', function () {
     logger.debug('Connected');
   });

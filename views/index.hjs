@@ -3,6 +3,9 @@
   <head>
     <title>Kongkow</title>
     <link rel='stylesheet' href='/static/css/style.css' />
+    <script type="text/javascript">
+      window.NODE_ENV = '{{NODE_ENV}}';
+    </script>
     <!-- TODO: figure out how to compile socket.io.js into one file -->
     <script src='/socket.io/socket.io.js'></script>
     <script type='text/javascript' src='/static/js/app.js'></script>
