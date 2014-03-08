@@ -6,6 +6,9 @@
 //   });
 //   view.layout();
 //
+// Subviews:
+// - ChatDisplay
+//
 var ChatWindow = Backbone.View.extend({
   events: {
     'keypress .chat-text-box': 'onKeypressChatTextBox',
@@ -13,11 +16,14 @@ var ChatWindow = Backbone.View.extend({
   },
 
   initialize: function () {
-    this.channel = null;      // Store channel id, which is used as an identifier for initial communication between peer
-    this.pc = null;           // Store RTCPeerConnection object
-    this.localStream = null;  // MediaStream object representing local stream
+    this.channel = null;          // Store channel id, which is used as an identifier for initial communication between peer
+    this.pc = null;               // Store RTCPeerConnection object
+    this.localStream = null;      // MediaStream object representing local stream
+    this.dataChannel = null;      // RTCDataChannel used for sending message
 
     $(window).on('resize.chat_window', $.proxy(this.onWindowResize, this));
+
+    this.chatDisplayView = new ChatDisplay({el: this.$('.chat-display')});
   },
 
   render: function () {
@@ -44,6 +50,16 @@ var ChatWindow = Backbone.View.extend({
     this.$('.chat-text-box').css('width', width+'px');
   },
 
+  enableTextChat: function () {
+    this.$('.chat-text-box').removeAttr('disabled');
+    this.$('.send-button').removeAttr('disabled');
+  },
+
+  disableTextChat: function () {
+    this.$('.chat-text-box').addAttr('disabled');
+    this.$('.send-button').addAttr('disabled');
+  },
+
   startChat: function () {
     var self = this;
     var localVideo = this.$('#local-video')[0];
@@ -65,14 +81,15 @@ var ChatWindow = Backbone.View.extend({
   },
 
   createPeerConnection: function () {
-    var config = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
-    this.pc = new RTCPeerConnection(config);
+    var servers = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+    this.pc = new RTCPeerConnection(servers, {optional: [{RtpDataChannels: true}]});
     this.pc.onicecandidate = $.proxy(this.pcOnIceCandidate, this);
 
     this.pc.onconnecting = $.proxy(this.pcOnSessionConnecting, this);
     this.pc.onopen = $.proxy(this.pcOnSessionOpened, this);
     this.pc.onaddstream = $.proxy(this.pcOnRemoteStreamAdded, this);
     this.pc.onremovestream = $.proxy(this.pcOnRemoteStreamRemoved, this);
+    this.pc.ondatachannel = $.proxy(this.pcOnDataChannelAdded, this);
   },
 
   handleMessage: function (message) {
@@ -84,6 +101,12 @@ var ChatWindow = Backbone.View.extend({
     } else if (message.type === 'start') {
       // Let the client knows that he should start WebRTC handshaking
       logger.debug('ChatWindow.handleMessage: start handshaking.');
+
+      this.dataChannel = this.pc.createDataChannel("text-chat", {reliable: true});
+      this.dataChannel.onmessage = $.proxy(this.handleDataChannelMessage, this);
+      window.dataChannel = this.dataChannel;
+      this.enableTextChat();
+
       this.pc.createOffer($.proxy(this.setLocalAndSendMessage, this));
     } else if (message.type === 'offer') {
       // Callee creates PeerConnection
@@ -130,6 +153,23 @@ var ChatWindow = Backbone.View.extend({
     remoteVideo.play();
   },
 
+  pcOnDataChannelAdded: function (event) {
+    logger.debug('ChatWindow.pcOnDataChannelAdded: called.');
+
+    this.dataChannel = event.channel;
+    this.dataChannel.onmessage = $.proxy(this.handleDataChannelMessage, this);
+    window.dataChannel = this.dataChannel;
+
+    this.enableTextChat();
+  },
+
+  handleDataChannelMessage: function (event) {
+    var data = JSON.parse(event.data);
+    if (data.type === 'text') {
+      this.chatDisplayView.receiveText(data.text);
+    }
+  },
+
   setLocalAndSendMessage: function (rtcSessionDescription) {
     this.pc.setLocalDescription(rtcSessionDescription);
     logger.debug(rtcSessionDescription);
@@ -138,6 +178,13 @@ var ChatWindow = Backbone.View.extend({
       type: rtcSessionDescription.type,
       rtcSessionDescription: rtcSessionDescription
     });
+  },
+
+  sendTextAndUpdateChatDisplay: function (text) {
+    if (this.dataChannel && this.dataChannel.readyState === 'open') {
+      this.dataChannel.send(JSON.stringify({type: 'text', text: text}));
+      this.chatDisplayView.sendText(text);
+    }
   },
 
 
@@ -149,15 +196,16 @@ var ChatWindow = Backbone.View.extend({
 
   onKeypressChatTextBox: function (e) {
     if (e.keyCode === 13) { // ENTER
+      e.preventDefault();
+
       var text = this.$('.chat-text-box').val();
       if (text.trim() !== '') {
         // Empty text box
         this.$('.chat-text-box').val('');
 
         // Send message
-        console.log('Send message');
+        this.sendTextAndUpdateChatDisplay(text);
       }
-      return false;
     }
   },
 
@@ -168,7 +216,7 @@ var ChatWindow = Backbone.View.extend({
       this.$('.chat-text-box').val('');
 
       // Send message
-      console.log('Send message');
+      this.sendTextAndUpdateChatDisplay(text);
     }
   },
 

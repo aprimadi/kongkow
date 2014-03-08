@@ -18,10 +18,13 @@
         <video id="local-video"></video>
       </div>
       <div class="right-panel">
-        <div class="chat-display"></div>
+        <div class="chat-display">
+          <div class="status"></div>
+          <div class="content"></div>
+        </div>
         <div class="chat-input">
-          <textarea class="chat-text-box" placeholder=""></textarea>
-          <button class="btn btn-primary send-button">Send</button>
+          <textarea class="chat-text-box" placeholder="" disabled></textarea>
+          <button class="btn btn-primary send-button" disabled>Send</button>
         </div>
       </div>
     </div>

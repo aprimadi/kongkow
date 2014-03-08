@@ -52,8 +52,15 @@ a {
   }
 
   .chat-display {
-    background-color: #ddd;
     width: 100%;
+    overflow-y: scroll;
+    border: 1px solid #ddd;
+
+    .status {
+      background-color: #ddd;
+      width: 100%;
+      min-height: 20px;
+    }
   }
   .chat-input {
     margin-top: 20px;
