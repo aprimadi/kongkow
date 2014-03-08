@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  window.socket = io.connect('http://localhost');
+  window.socket = io.connect(window.location.toString());
   socket.on('connected', function () {
     logger.debug('Connected');
   });
