@@ -1,3 +1,7 @@
+# Demo
+
+The demo of this project is available on [Heroku](http://dry-thicket-1171.herokuapp.com/)
+
 # Development
 
 On development, start the node server using supervisor:
