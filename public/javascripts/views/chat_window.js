@@ -77,6 +77,8 @@ var ChatWindow = Backbone.View.extend({
 
       // Signal that this client is ready for handshaking
       socket.emit('start_handshake');
+    }, function () {
+      console.log('error');
     });
   },
 
